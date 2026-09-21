@@ -1,0 +1,10 @@
+{
+    "extends": "../tsconfig.json",
+    "include": [
+        "../lib/**/*",
+        "./utils/**/*",
+        "./units/**/*",
+        "./flows/**/*",
+        "./main.ts"
+    ]
+}
