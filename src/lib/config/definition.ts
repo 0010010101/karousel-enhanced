@@ -62,32 +62,32 @@ const configDef = [
     {
         name: "gapsOuterTop",
         type: "UInt",
-        default: 16,
+        default: 0,
     },
     {
         name: "gapsOuterBottom",
         type: "UInt",
-        default: 16,
+        default: 0,
     },
     {
         name: "gapsOuterLeft",
         type: "UInt",
-        default: 16,
+        default: 0,
     },
     {
         name: "gapsOuterRight",
         type: "UInt",
-        default: 16,
+        default: 0,
     },
     {
         name: "gapsInnerHorizontal",
         type: "UInt",
-        default: 8,
+        default: 4,
     },
     {
         name: "gapsInnerVertical",
         type: "UInt",
-        default: 8,
+        default: 4,
     },
     {
         name: "stackOffsetX",
@@ -107,7 +107,7 @@ const configDef = [
     {
         name: "presetWidths",
         type: "String",
-        default: "50%, 100%",
+        default: "100%, 50%, 33.33%, 25%",
     },
     {
         name: "verticalResizeStep",
@@ -122,7 +122,7 @@ const configDef = [
     {
         name: "untileOnDrag",
         type: "Bool",
-        default: true,
+        default: false,
     },
     {
         name: "cursorFollowsFocus",
@@ -142,7 +142,7 @@ const configDef = [
     {
         name: "reMaximize",
         type: "Bool",
-        default: false,
+        default: true,
     },
     {
         name: "skipSwitcher",
@@ -167,7 +167,7 @@ const configDef = [
     {
         name: "gestureScroll",
         type: "Bool",
-        default: false,
+        default: true,
     },
     {
         name: "gestureScrollInvert",
@@ -182,7 +182,7 @@ const configDef = [
     {
         name: "tiledKeepBelow",
         type: "Bool",
-        default: true,
+        default: false,
     },
     {
         name: "floatingKeepAbove",
@@ -192,7 +192,7 @@ const configDef = [
     {
         name: "noLayering",
         type: "Bool",
-        default: false,
+        default: true,
     },
     {
         name: "windowRules",
@@ -203,5 +203,30 @@ const configDef = [
         name: "tiledDesktops",
         type: "String",
         default: ".*",
+    },
+    {
+        name: "autoTileAtEdges",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "scrollingCentered",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "focusRingEnabled",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "focusRingColor",
+        type: "String",
+        default: "#FFD700",
+    },
+    {
+        name: "focusRingWidth",
+        type: "UInt",
+        default: 3,
     },
 ];

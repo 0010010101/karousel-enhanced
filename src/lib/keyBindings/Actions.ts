@@ -523,6 +523,21 @@ class Actions {
         }
         this.tailMoveToDesktop(targetDesktopIndex, cm, dm, window, column, oldGrid);
     };
+
+    public readonly toggleFullscreenMaximize = (cm: ClientManager, dm: DesktopManager, window: Window, column: Column, grid: Grid) => {
+        // Niri-like fake fullscreen: toggle between full screen width and tiled width
+        const kwinClient = window.client.kwinClient;
+        const tilingAreaWidth = grid.desktop.tilingArea.width;
+        
+        if (column.getWidth() >= tilingAreaWidth - 1) {
+            // Currently maximized, restore to previous width
+            const preferredWidth = window.client.preferredWidth;
+            column.setWidth(preferredWidth, true);
+        } else {
+            // Maximize: set column to full tiling area width
+            column.setWidth(tilingAreaWidth, true);
+        }
+    };
 }
 
 namespace Actions {

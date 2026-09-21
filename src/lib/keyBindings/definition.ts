@@ -2,35 +2,32 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
     return [
         {
             name: "window-toggle-floating",
-            description: "Toggle floating",
-            defaultKeySequence: "Meta+Space",
+            description: "Toggle floating (disable tiling for this window)",
+            defaultKeySequence: "Meta+Shift+F",
             action: () => world.do(actions.windowToggleFloating),
         },
         {
             name: "focus-left",
             description: "Move focus left",
-            defaultKeySequence: "Meta+A",
+            defaultKeySequence: "Meta+H",
             action: () => world.doIfTiledFocused(actions.focusLeft),
         },
         {
             name: "focus-right",
             description: "Move focus right",
-            comment: "Clashes with default KDE shortcuts, may require manual remapping",
-            defaultKeySequence: "Meta+D",
+            defaultKeySequence: "Meta+L",
             action: () => world.doIfTiledFocused(actions.focusRight),
         },
         {
             name: "focus-up",
             description: "Move focus up",
-            comment: "Clashes with default KDE shortcuts, may require manual remapping",
-            defaultKeySequence: "Meta+W",
+            defaultKeySequence: "Meta+K",
             action: () => world.doIfTiledFocused(actions.focusUp),
         },
         {
             name: "focus-down",
             description: "Move focus down",
-            comment: "Clashes with default KDE shortcuts, may require manual remapping",
-            defaultKeySequence: "Meta+S",
+            defaultKeySequence: "Meta+J",
             action: () => world.doIfTiledFocused(actions.focusDown),
         },
         {
@@ -59,26 +56,26 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             name: "window-move-left",
             description: "Move window left",
             comment: "Moves window out of and into columns",
-            defaultKeySequence: "Meta+Shift+A",
+            defaultKeySequence: "Meta+Shift+H",
             action: () => world.doIfTiledFocused(actions.windowMoveLeft),
         },
         {
             name: "window-move-right",
             description: "Move window right",
             comment: "Moves window out of and into columns",
-            defaultKeySequence: "Meta+Shift+D",
+            defaultKeySequence: "Meta+Shift+L",
             action: () => world.doIfTiledFocused(actions.windowMoveRight),
         },
         {
             name: "window-move-up",
             description: "Move window up",
-            defaultKeySequence: "Meta+Shift+W",
+            defaultKeySequence: "Meta+Shift+K",
             action: () => world.doIfTiledFocused(actions.windowMoveUp),
         },
         {
             name: "window-move-down",
             description: "Move window down",
-            defaultKeySequence: "Meta+Shift+S",
+            defaultKeySequence: "Meta+Shift+J",
             action: () => world.doIfTiledFocused(actions.windowMoveDown),
         },
         {
@@ -117,19 +114,19 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             name: "column-toggle-stacked",
             description: "Toggle stacked layout for focused column",
             comment: "Only the active window visible",
-            defaultKeySequence: "Meta+X",
+            defaultKeySequence: "Meta+S",
             action: () => world.doIfTiledFocused(actions.columnToggleStacked),
         },
         {
             name: "column-move-left",
             description: "Move column left",
-            defaultKeySequence: "Meta+Ctrl+Shift+A",
+            defaultKeySequence: "Meta+Ctrl+Shift+H",
             action: () => world.doIfTiledFocused(actions.columnMoveLeft),
         },
         {
             name: "column-move-right",
             description: "Move column right",
-            defaultKeySequence: "Meta+Ctrl+Shift+D",
+            defaultKeySequence: "Meta+Ctrl+Shift+L",
             action: () => world.doIfTiledFocused(actions.columnMoveRight),
         },
         {
@@ -168,7 +165,8 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
         },
         {
             name: "column-width-maximize",
-            description: "Increase column width to maximum",
+            description: "Maximize column width (fill screen)",
+            defaultKeySequence: "Meta+M",
             action: () => world.doIfTiledFocused(actions.columnWidthMaximize),
         },
         {
@@ -179,13 +177,13 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
         {
             name: "cycle-preset-widths",
             description: "Cycle through preset column widths",
-            defaultKeySequence: "Meta+R",
+            defaultKeySequence: "Meta+Return",
             action: () => world.doIfTiledFocused(actions.cyclePresetWidths),
         },
         {
             name: "cycle-preset-widths-reverse",
             description: "Cycle through preset column widths in reverse",
-            defaultKeySequence: "Meta+Shift+R",
+            defaultKeySequence: "Meta+Shift+Return",
             action: () => world.doIfTiledFocused(actions.cyclePresetWidthsReverse),
         },
         {
@@ -197,14 +195,13 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
         {
             name: "columns-squeeze-left",
             description: "Squeeze left column onto the screen",
-            comment: "Clashes with default KDE shortcuts, may require manual remapping",
-            defaultKeySequence: "Meta+Ctrl+A",
+            defaultKeySequence: "Meta+Ctrl+H",
             action: () => world.doIfTiledFocused(actions.columnsSqueezeLeft),
         },
         {
             name: "columns-squeeze-right",
             description: "Squeeze right column onto the screen",
-            defaultKeySequence: "Meta+Ctrl+D",
+            defaultKeySequence: "Meta+Ctrl+L",
             action: () => world.doIfTiledFocused(actions.columnsSqueezeRight),
         },
         {
@@ -217,13 +214,13 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
         {
             name: "grid-scroll-left-column",
             description: "Scroll one column to the left",
-            defaultKeySequence: "Meta+Alt+A",
+            defaultKeySequence: "Meta+Alt+H",
             action: () => world.do(actions.gridScrollLeftColumn),
         },
         {
             name: "grid-scroll-right-column",
             description: "Scroll one column to the right",
-            defaultKeySequence: "Meta+Alt+D",
+            defaultKeySequence: "Meta+Alt+L",
             action: () => world.do(actions.gridScrollRightColumn),
         },
         {
@@ -265,6 +262,12 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             name: "tail-move-to-previous-desktop",
             description: "Move this and all following columns to the previous desktop",
             action: () => world.doIfTiledFocused(actions.tailMoveToPreviousDesktop),
+        },
+        {
+            name: "toggle-fullscreen-maximize",
+            description: "Toggle fake fullscreen/maximize for focused window (niri-like)",
+            defaultKeySequence: "Meta+F",
+            action: () => world.doIfTiledFocused(actions.toggleFullscreenMaximize),
         },
     ];
 }

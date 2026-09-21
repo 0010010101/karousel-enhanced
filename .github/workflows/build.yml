@@ -1,0 +1,67 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install pnpm
+      run: npm install -g pnpm
+    
+    - name: Install dependencies
+      run: pnpm install --ignore-scripts
+    
+    - name: Lint
+      run: pnpm exec eslint ./src
+    
+    - name: Run tests
+      run: ./run-ts.sh ./src/tests
+    
+    - name: Build
+      run: |
+        pnpm exec tsc -p ./src/main --outFile ./package/contents/code/main.js
+        mkdir -p ./package/contents/config
+        ./run-ts.sh ./src/generators/config > ./package/contents/config/main.xml
+    
+    - name: Create package archive
+      if: startsWith(github.ref, 'refs/tags/v')
+      run: |
+        VERSION=$(grep '"Version":' ./package/metadata.json | grep -o '[0-9\.]*')
+        tar -czf ./karousel_${VERSION}.tar.gz ./package --transform s/package/karousel/
+        echo "PACKAGE_NAME=karousel_${VERSION}.tar.gz" >> $GITHUB_ENV
+    
+    - name: Upload artifact
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/upload-artifact@v4
+      with:
+        name: karousel-package
+        path: ./karousel_*.tar.gz
+    
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ./karousel_*.tar.gz
+        draft: false
+        prerelease: false
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
