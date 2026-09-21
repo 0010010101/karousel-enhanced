@@ -5109,6 +5109,7 @@ tests.register("Clients.canTileEver", 1, () => {
 });
 tests.register("Center focused", 5, () => {
     const config = getDefaultConfig();
+    config.scrollingCentered = false;
     const { qtMock, workspaceMock, world } = init(config);
     const [client0, client1, client2] = workspaceMock.createClientsWithWidths(300, 152, 300);
     world.do((clientManager, desktopManager) => {
