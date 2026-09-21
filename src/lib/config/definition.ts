@@ -210,11 +210,6 @@ const configDef = [
         default: false,
     },
     {
-        name: "scrollingCentered",
-        type: "Bool",
-        default: true,
-    },
-    {
         name: "focusRingEnabled",
         type: "Bool",
         default: true,
