@@ -125,6 +125,26 @@ const configDef = [
         default: true,
     },
     {
+        name: "preventUntile",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "disableWindowGrouping",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "enableAnimations",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "animationDuration",
+        type: "UInt",
+        default: 150,
+    },
+    {
         name: "cursorFollowsFocus",
         type: "Bool",
         default: false,
@@ -165,6 +185,31 @@ const configDef = [
         default: false,
     },
     {
+        name: "scrollingInfinite",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "focusFollowsMouse",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "raiseOnFocus",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "enableOverview",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "overviewScale",
+        type: "UInt",
+        default: 0.3,
+    },
+    {
         name: "gestureScroll",
         type: "Bool",
         default: false,
@@ -203,5 +248,20 @@ const configDef = [
         name: "tiledDesktops",
         type: "String",
         default: ".*",
+    },
+    {
+        name: "enableGlowingRing",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "glowingRingColor",
+        type: "String",
+        default: "#63c0f9",
+    },
+    {
+        name: "glowingRingWidth",
+        type: "UInt",
+        default: 3,
     },
 ];

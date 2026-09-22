@@ -12,6 +12,10 @@ interface Config {
     verticalResizeStep: number;
     offScreenOpacity: number;
     untileOnDrag: boolean;
+    preventUntile: boolean;
+    disableWindowGrouping: boolean;
+    enableAnimations: boolean;
+    animationDuration: number;
     cursorFollowsFocus: boolean;
     stackColumnsByDefault: boolean;
     resizeNeighborColumn: boolean;
@@ -20,6 +24,11 @@ interface Config {
     scrollingLazy: boolean;
     scrollingCentered: boolean;
     scrollingGrouped: boolean;
+    scrollingInfinite: boolean;
+    focusFollowsMouse: boolean;
+    raiseOnFocus: boolean;
+    enableOverview: boolean;
+    overviewScale: number;
     gestureScroll: boolean;
     gestureScrollInvert: boolean;
     gestureScrollStep: number;
@@ -27,4 +36,7 @@ interface Config {
     floatingKeepAbove: boolean;
     windowRules: string;
     tiledDesktops: string;
+    enableGlowingRing: boolean;
+    glowingRingColor: string;
+    glowingRingWidth: number;
 }

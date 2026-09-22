@@ -1,0 +1,53 @@
+```
+# Compressed files
+*.tar.gz
+
+# Temp files
+run-ts-tmp.js
+
+# Build artifacts
+dist/
+build/
+*.js
+
+# Dependencies
+node_modules/
+
+# Editors
+.vscode/
+.idea/
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled files
+*.o
+*.obj
+*.so
+*.dll
+*.exe
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# Testing
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db
+```

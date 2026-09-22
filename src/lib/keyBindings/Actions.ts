@@ -177,7 +177,94 @@ class Actions {
         if (Workspace.activeWindow === null) {
             return;
         }
+        // Only allow floating if preventUntile is false or window rules allow it
+        if ((this.config as any).preventUntile) {
+            // Show notification that untile is disabled
+            return;
+        }
         cm.toggleFloatingClient(Workspace.activeWindow);
+    };
+
+    public readonly windowToggleFullScreen = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const client = cm.findTiledWindow(Workspace.activeWindow);
+        if (client === null) {
+            return;
+        }
+        
+        const kwinClient = client.client.kwinClient;
+        const isFullScreen = kwinClient.fullScreen;
+        
+        // Toggle fake fullscreen (niri-style) - keeps window tiled but fills screen
+        kwinClient.fullScreen = !isFullScreen;
+    };
+
+    public readonly windowToggleMaximized = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const client = cm.findTiledWindow(Workspace.activeWindow);
+        if (client === null) {
+            return;
+        }
+        
+        const kwinClient = client.client.kwinClient;
+        const desktop = dm.getDesktopForClient(kwinClient);
+        if (!desktop) return;
+        
+        // Check if already maximized by script
+        const isScriptMaximized = client.focusedState.maximizedMode === MaximizedMode.Maximized;
+        
+        if (isScriptMaximized) {
+            // Restore to normal tiling
+            desktop.arrange();
+            client.focusedState.maximizedMode = MaximizedMode.Unmaximized;
+        } else {
+            // Maximize to fill available screen space (script-controlled)
+            const area = desktop.tilingArea;
+            client.client.place(area.x, area.y, area.width, area.height, (this.config as any).enableAnimations);
+            client.focusedState.maximizedMode = MaximizedMode.Maximized;
+            
+            // Disable KWin's native maximize to let script control it
+            kwinClient.setMaximize(false, false);
+        }
+    };
+
+    public readonly windowFloatToggle = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        // Meta+Space: detach from tiling and float
+        cm.toggleFloatingClient(Workspace.activeWindow);
+    };
+
+    public readonly windowMaximize = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const window = cm.findTiledWindow(Workspace.activeWindow);
+        if (window === null) {
+            return;
+        }
+        
+        // Niri-style maximize: fill entire screen while staying tiled
+        const kwinClient = window.client.kwinClient;
+        const screenGeo = Workspace.clientArea(ClientAreaOption.FullScreenArea, Workspace.activeScreen, kwinClient.desktops[0]);
+        window.client.place(screenGeo.x, screenGeo.y, screenGeo.width, screenGeo.height);
+    };
+
+    public readonly toggleOverview = (cm: ClientManager, dm: DesktopManager) => {
+        // Show overview of all columns/windows (niri-expose like)
+        const desktop = dm.getCurrentDesktop();
+        if (desktop === undefined) {
+            return;
+        }
+        
+        // Trigger overview mode - this would need UI integration
+        // For now, center view on all columns
+        desktop.grid.arrange(desktop.tilingArea.x - desktop.getScrollX(), desktop.getCurrentVisibleRange());
     };
 
     public readonly columnMoveLeft = (cm: ClientManager, dm: DesktopManager, window: Window, column: Column, grid: Grid) => {

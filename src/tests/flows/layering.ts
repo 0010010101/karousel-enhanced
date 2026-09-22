@@ -2,6 +2,7 @@ tests.register("tiledKeepBelow", 10, () => {
     const config = getDefaultConfig();
     config.tiledKeepBelow = true;
     config.floatingKeepAbove = false;
+    config.preventUntile = false;
     const { qtMock, workspaceMock, world } = init(config);
 
     const pinGeometry = new MockQmlRect(0, 0, 200, screen.height);
@@ -60,6 +61,7 @@ tests.register("floatingKeepAbove", 10, () => {
     const config = getDefaultConfig();
     config.tiledKeepBelow = false;
     config.floatingKeepAbove = true;
+    config.preventUntile = false;
     const { qtMock, workspaceMock, world } = init(config);
 
     const pinGeometry = new MockQmlRect(0, 0, 200, screen.height);
@@ -118,6 +120,7 @@ tests.register("No layering", 10, () => {
     const config = getDefaultConfig();
     config.tiledKeepBelow = false;
     config.floatingKeepAbove = false;
+    config.preventUntile = false;
     // In this mode, Karousel shouldn't change keepBelow or keepAbove.
     // Except when tiling a window, keepAbove should still be cleared.
 
