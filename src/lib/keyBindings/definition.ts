@@ -2,9 +2,15 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
     return [
         {
             name: "window-toggle-floating",
-            description: "Toggle floating",
-            defaultKeySequence: "Meta+Space",
+            description: "Toggle floating (detach from tiling)",
+            defaultKeySequence: "Meta+Shift+Space",
             action: () => world.do(actions.windowToggleFloating),
+        },
+        {
+            name: "window-float-toggle",
+            description: "Float window (Meta+Space)",
+            defaultKeySequence: "Meta+Space",
+            action: () => world.do(actions.windowFloatToggle),
         },
         {
             name: "window-toggle-fullscreen",
@@ -13,10 +19,10 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             action: () => world.doIfTiledFocused(actions.windowToggleFullScreen),
         },
         {
-            name: "window-maximize",
-            description: "Maximize window to fill screen (niri-style)",
+            name: "window-toggle-maximized",
+            description: "Toggle script-controlled maximize (50% <-> 100%)",
             defaultKeySequence: "Meta+Ctrl+F",
-            action: () => world.doIfTiledFocused(actions.windowMaximize),
+            action: () => world.doIfTiledFocused(actions.windowToggleMaximized),
         },
         {
             name: "toggle-overview",

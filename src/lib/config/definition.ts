@@ -249,4 +249,19 @@ const configDef = [
         type: "String",
         default: ".*",
     },
+    {
+        name: "enableGlowingRing",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "glowingRingColor",
+        type: "String",
+        default: "#63c0f9",
+    },
+    {
+        name: "glowingRingWidth",
+        type: "UInt",
+        default: 3,
+    },
 ];

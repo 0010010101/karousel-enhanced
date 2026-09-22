@@ -36,4 +36,7 @@ interface Config {
     floatingKeepAbove: boolean;
     windowRules: string;
     tiledDesktops: string;
+    enableGlowingRing: boolean;
+    glowingRingColor: string;
+    glowingRingWidth: number;
 }

@@ -6,6 +6,7 @@ class ClientWrapper {
     private maximizedMode: MaximizedMode | undefined;
     private readonly manipulatingGeometry: Doer;
     private lastPlacement: QmlRect | null; // workaround for issue #19
+    private animator: any | null = null;
 
     constructor(
         public readonly kwinClient: KwinClient,
@@ -25,23 +26,74 @@ class ClientWrapper {
         this.manipulatingGeometry = new Doer();
         this.lastPlacement = null;
         this.stateManager = new ClientState.Manager(constructInitialState(this));
+        
+        // Initialize animator if animations are enabled
+        if (Config.enableAnimations) {
+            this.animator = Qt.createQmlObject(
+                `import QtQuick 6.0
+                Item {
+                    property real xVal: 0;
+                    property real yVal: 0;
+                    property real wVal: 0;
+                    property real hVal: 0;
+                    property real opacityVal: 1;
+                    
+                    NumberAnimation on xVal { id: animX; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on yVal { id: animY; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on wVal { id: animW; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on hVal { id: animH; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on opacityVal { id: animOpacity; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                }`,
+                qmlBase,
+            );
+        }
     }
 
-    public place(x: number, y: number, width: number, height: number) {
-        this.manipulatingGeometry.do(() => {
-            if (this.kwinClient.resize) {
-                // window is being manually resized, prevent fighting with the user
-                return;
-            }
-            this.lastPlacement = Qt.rect(x, y, width, height);
-            this.kwinClient.frameGeometry = this.lastPlacement;
-            if (this.kwinClient.frameGeometry !== this.lastPlacement) {
-                // frameGeometry assignment failed. This sometimes happens on Wayland
-                // when a window is off-screen, effectively making it stuck there.
-                this.kwinClient.frameGeometry.x = x; // This makes it unstuck.
+    public place(x: number, y: number, width: number, height: number, animate = false) {
+        if (animate && this.animator && Config.enableAnimations) {
+            const animObj = this.animator;
+            const oldGeo = this.kwinClient.frameGeometry;
+            
+            // Set starting values
+            animObj.xVal = oldGeo.x;
+            animObj.yVal = oldGeo.y;
+            animObj.wVal = oldGeo.width;
+            animObj.hVal = oldGeo.height;
+            
+            // Animate to target values
+            animObj.xVal = x;
+            animObj.yVal = y;
+            animObj.wVal = width;
+            animObj.hVal = height;
+            
+            // Apply changes during animation
+            const applyGeometry = () => {
+                this.manipulatingGeometry.do(() => {
+                    if (this.kwinClient.resize) return;
+                    this.kwinClient.frameGeometry.x = animObj.xVal;
+                    this.kwinClient.frameGeometry.y = animObj.yVal;
+                    this.kwinClient.frameGeometry.width = animObj.wVal;
+                    this.kwinClient.frameGeometry.height = animObj.hVal;
+                });
+            };
+            
+            animObj.xValChanged.connect(applyGeometry);
+            animObj.yValChanged.connect(applyGeometry);
+            animObj.wValChanged.connect(applyGeometry);
+            animObj.hValChanged.connect(applyGeometry);
+        } else {
+            this.manipulatingGeometry.do(() => {
+                if (this.kwinClient.resize) {
+                    return;
+                }
+                this.lastPlacement = Qt.rect(x, y, width, height);
                 this.kwinClient.frameGeometry = this.lastPlacement;
-            }
-        });
+                if (this.kwinClient.frameGeometry !== this.lastPlacement) {
+                    this.kwinClient.frameGeometry.x = x;
+                    this.kwinClient.frameGeometry = this.lastPlacement;
+                }
+            });
+        }
     }
 
     private moveTransient(dx: number, dy: number, kwinDesktops: KwinDesktop[]) {

@@ -177,6 +177,11 @@ class Actions {
         if (Workspace.activeWindow === null) {
             return;
         }
+        // Only allow floating if preventUntile is false or window rules allow it
+        if ((this.config as any).preventUntile) {
+            // Show notification that untile is disabled
+            return;
+        }
         cm.toggleFloatingClient(Workspace.activeWindow);
     };
 
@@ -194,6 +199,45 @@ class Actions {
         
         // Toggle fake fullscreen (niri-style) - keeps window tiled but fills screen
         kwinClient.fullScreen = !isFullScreen;
+    };
+
+    public readonly windowToggleMaximized = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const client = cm.findTiledWindow(Workspace.activeWindow);
+        if (client === null) {
+            return;
+        }
+        
+        const kwinClient = client.client.kwinClient;
+        const desktop = dm.getDesktopForClient(kwinClient);
+        if (!desktop) return;
+        
+        // Check if already maximized by script
+        const isScriptMaximized = client.focusedState.maximizedMode === MaximizedMode.Maximized;
+        
+        if (isScriptMaximized) {
+            // Restore to normal tiling
+            desktop.arrange();
+            client.focusedState.maximizedMode = MaximizedMode.Unmaximized;
+        } else {
+            // Maximize to fill available screen space (script-controlled)
+            const area = desktop.tilingArea;
+            client.client.place(area.x, area.y, area.width, area.height, (this.config as any).enableAnimations);
+            client.focusedState.maximizedMode = MaximizedMode.Maximized;
+            
+            // Disable KWin's native maximize to let script control it
+            kwinClient.setMaximize(false, false);
+        }
+    };
+
+    public readonly windowFloatToggle = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        // Meta+Space: detach from tiling and float
+        cm.toggleFloatingClient(Workspace.activeWindow);
     };
 
     public readonly windowMaximize = (cm: ClientManager, dm: DesktopManager) => {
