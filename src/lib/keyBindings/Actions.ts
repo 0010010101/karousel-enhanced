@@ -180,6 +180,20 @@ class Actions {
         cm.toggleFloatingClient(Workspace.activeWindow);
     };
 
+    public readonly windowToggleFullScreen = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const client = cm.findTiledWindow(Workspace.activeWindow);
+        if (client === null) {
+            return;
+        }
+        
+        const kwinClient = client.client.kwinClient;
+        const isFullScreen = kwinClient.fullScreen;
+        kwinClient.fullScreen = !isFullScreen;
+    };
+
     public readonly columnMoveLeft = (cm: ClientManager, dm: DesktopManager, window: Window, column: Column, grid: Grid) => {
         grid.moveColumnLeft(column);
     };

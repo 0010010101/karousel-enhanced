@@ -12,6 +12,10 @@ interface Config {
     verticalResizeStep: number;
     offScreenOpacity: number;
     untileOnDrag: boolean;
+    preventUntile: boolean;
+    disableWindowGrouping: boolean;
+    enableAnimations: boolean;
+    animationDuration: number;
     cursorFollowsFocus: boolean;
     stackColumnsByDefault: boolean;
     resizeNeighborColumn: boolean;

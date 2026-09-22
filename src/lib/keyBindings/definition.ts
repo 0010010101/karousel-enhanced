@@ -7,6 +7,12 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             action: () => world.do(actions.windowToggleFloating),
         },
         {
+            name: "window-toggle-fullscreen",
+            description: "Toggle fake fullscreen (niri-style)",
+            defaultKeySequence: "Meta+F",
+            action: () => world.doIfTiledFocused(actions.windowToggleFullScreen),
+        },
+        {
             name: "focus-left",
             description: "Move focus left",
             defaultKeySequence: "Meta+A",

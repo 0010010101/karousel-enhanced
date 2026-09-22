@@ -125,6 +125,26 @@ const configDef = [
         default: true,
     },
     {
+        name: "preventUntile",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "disableWindowGrouping",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "enableAnimations",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "animationDuration",
+        type: "UInt",
+        default: 150,
+    },
+    {
         name: "cursorFollowsFocus",
         type: "Bool",
         default: false,

@@ -169,7 +169,8 @@ class ClientManager {
                 return;
             }
             client.stateManager.setState(() => new ClientState.Tiled(this.world, client, desktop.grid), FocusPassing.Type.None);
-        } else if (clientState instanceof ClientState.Tiled) {
+        } else if (clientState instanceof ClientState.Tiled && !this.config.preventUntile) {
+            // Only allow untile if preventUntile is disabled
             client.stateManager.setState(() => new ClientState.Floating(this.world, client, this.config, true), FocusPassing.Type.None);
         }
     }
@@ -234,5 +235,6 @@ namespace ClientManager {
     export interface Config {
         floatingKeepAbove: boolean;
         cursorFollowsFocus: boolean;
+        preventUntile: boolean;
     }
 }
