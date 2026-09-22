@@ -1,43 +1,48 @@
 ```
 # Dependencies
 node_modules/
-package-lock.json
+venv/
+.venv/
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+target/
+.gradle/
 
 # Build artifacts
-dist/
 build/
-target/
-
-# Logs and temp files
-*.log
-*.tmp
-*.swp
-
-# Editors
-.vscode/
-.idea/
-
-# Environment
-.env
-.env.local
-*.env.*
-
-# Python
-__pycache__/
+dist/
 *.pyc
-*.pyo
-*.pyd
-
-# Compiled files
+*.class
 *.o
-*.obj
 *.exe
 *.dll
 *.so
 *.a
+*.obj
 *.out
 
-# Archives
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.tmp
+
+# System files
+.DS_Store
+Thumbs.db
+.env
+.env.local
+*.env.*
+
+# Logs and coverage
+*.log
+coverage/
+htmlcov/
+.coverage
+
+# Compressed files
 *.zip
 *.gz
 *.tar
@@ -56,48 +61,4 @@ __pycache__/
 *.Z
 *.lz
 *.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Gradle
-.gradle/
-
-# MyPy
-.mypy_cache/
-
-# PyTest
-.pytest_cache/
-
-# Temporary files
-*.tmp
-*.temp
-*.bak
-*.backup
-
-# OS specific
-.DS_Store
-Thumbs.db
-
-# Runtime
-*.jar
-*.war
-*.ear
-*.class
-
-# Compressed
-*.rar
-*.zip
-*.tar.*
-*.gz
-*.bz2
-*.xz
-*.7z
-*.zst
 ```
