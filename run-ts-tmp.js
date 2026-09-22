@@ -5109,7 +5109,9 @@ tests.register("Clients.canTileEver", 1, () => {
 });
 tests.register("Center focused", 5, () => {
     const config = getDefaultConfig();
+    config.scrollingLazy = true;
     config.scrollingCentered = false;
+    config.scrollingGrouped = false;
     config.gapsOuterLeft = 0;
     config.gapsOuterTop = 0;
     config.gapsOuterRight = 0;

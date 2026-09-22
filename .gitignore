@@ -1,1 +1,158 @@
-Nothing needs to be added to .gitignore since only a JavaScript source file (`run-ts-tmp.js`) was modified, which is a source code file that should not be ignored.
+```gitignore
+# Compiled and build artifacts
+*.pyc
+__pycache__/
+*.o
+*.obj
+dist/
+build/
+target/
+
+# Dependencies
+.venv/
+venv/
+node_modules/
+.julia/
+.zig-cache/
+
+# Logs and temp files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.env.*
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage
+coverage/
+htmlcov/
+.coverage
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Compressed files
+*.zip
+*.gz
+*.tar
+*.tgz
+*.bz2
+*.xz
+*.7z
+*.rar
+*.zst
+*.lz4
+*.lzh
+*.cab
+*.arj
+*.rpm
+*.deb
+*.Z
+*.lz
+*.lzo
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.zst
+
+# Python specific
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+*.so
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+.mypy_cache/
+.hypothesis/
+
+# Node specific
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.next/
+.nuxt/
+
+# Java/Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+target/
+.gradle/
+build/
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Rust
+Cargo.lock
+*.lock
+target/
+
+# Ruby
+*.gem
+*.rbc
+.bundle/
+vendor/bundle/
+vendor/cache/
+vendor/gems/
+vendor/ruby/
+
+# C/C++
+*.o
+*.a
+*.la
+*.lo
+*.so
+*.so.*
+*.dylib
+*.dll
+*.obj
+*.exe
+*.out
+*.ilk
+*.pdb
+*.iobj
+*.ipdb
+*.tlog
+
+# Julia
+.julia/
+*.ji
+*.jl.cov
+*.jl.mem
+
+# Zig
+zig-cache/
+zig-out/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*~
+.#*
+.DS_Store
+Thumbs.db
+```
