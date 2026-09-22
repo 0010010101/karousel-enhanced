@@ -174,5 +174,14 @@
         <entry name="tiledDesktops" type="String">
             <default>.*</default>
         </entry>
+        <entry name="enableGlowingRing" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="glowingRingColor" type="String">
+            <default>#63c0f9</default>
+        </entry>
+        <entry name="glowingRingWidth" type="UInt">
+            <default>3</default>
+        </entry>
     </group>
 </kcfg>

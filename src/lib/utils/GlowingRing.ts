@@ -1,19 +1,25 @@
 class GlowingRing {
     private readonly ringElement: QmlObject | null;
     private visible = false;
+    private enabled: boolean;
+    private color: string;
+    private width: number;
     
-    constructor() {
-        const cfg: any = Config;
-        if (cfg.enableGlowingRing) {
+    constructor(enabled: boolean, color: string, width: number) {
+        this.enabled = enabled;
+        this.color = color;
+        this.width = width;
+        
+        if (enabled) {
             this.ringElement = Qt.createQmlObject(
                 `import QtQuick 6.0
                 import org.kde.kwin 3.0
                 
                 Rectangle {
                     id: glowRing
-                    property int ringWidth: ${cfg.glowingRingWidth};
+                    property int ringWidth: ${width};
                     color: "transparent"
-                    border.color: "${cfg.glowingRingColor}"
+                    border.color: "${color}"
                     border.width: ringWidth
                     radius: 4
                     z: 9999
@@ -58,14 +64,13 @@ class GlowingRing {
     }
     
     public show(x: number, y: number, width: number, height: number) {
-        const cfg: any = Config;
-        if (!this.ringElement || !cfg.enableGlowingRing) return;
+        if (!this.ringElement || !this.enabled) return;
         
         const ring = this.ringElement as any;
-        ring.x = x - cfg.glowingRingWidth;
-        ring.y = y - cfg.glowingRingWidth;
-        ring.width = width + (cfg.glowingRingWidth * 2);
-        ring.height = height + (cfg.glowingRingWidth * 2);
+        ring.x = x - this.width;
+        ring.y = y - this.width;
+        ring.width = width + (this.width * 2);
+        ring.height = height + (this.width * 2);
         ring.visible = true;
         ring.opacity = 0.8;
         this.visible = true;
@@ -82,14 +87,13 @@ class GlowingRing {
     }
     
     public updatePosition(x: number, y: number, width: number, height: number) {
-        const cfg: any = Config;
         if (!this.ringElement || !this.visible) return;
         
         const ring = this.ringElement as any;
-        ring.x = x - cfg.glowingRingWidth;
-        ring.y = y - cfg.glowingRingWidth;
-        ring.width = width + (cfg.glowingRingWidth * 2);
-        ring.height = height + (cfg.glowingRingWidth * 2);
+        ring.x = x - this.width;
+        ring.y = y - this.width;
+        ring.width = width + (this.width * 2);
+        ring.height = height + (this.width * 2);
     }
     
     public destroy() {

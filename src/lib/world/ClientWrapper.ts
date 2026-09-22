@@ -7,6 +7,13 @@ class ClientWrapper {
     private readonly manipulatingGeometry: Doer;
     private lastPlacement: QmlRect | null; // workaround for issue #19
     private animator: any | null = null;
+    private static animationEnabled = false;
+    private static animationDuration = 150;
+    
+    public static setAnimationConfig(enabled: boolean, duration: number) {
+        ClientWrapper.animationEnabled = enabled;
+        ClientWrapper.animationDuration = duration;
+    }
 
     constructor(
         public readonly kwinClient: KwinClient,
@@ -28,7 +35,7 @@ class ClientWrapper {
         this.stateManager = new ClientState.Manager(constructInitialState(this));
         
         // Initialize animator if animations are enabled
-        if (Config.enableAnimations) {
+        if (ClientWrapper.animationEnabled) {
             this.animator = Qt.createQmlObject(
                 `import QtQuick 6.0
                 Item {
@@ -38,11 +45,11 @@ class ClientWrapper {
                     property real hVal: 0;
                     property real opacityVal: 1;
                     
-                    NumberAnimation on xVal { id: animX; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
-                    NumberAnimation on yVal { id: animY; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
-                    NumberAnimation on wVal { id: animW; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
-                    NumberAnimation on hVal { id: animH; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
-                    NumberAnimation on opacityVal { id: animOpacity; duration: ${Config.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on xVal { id: animX; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on yVal { id: animY; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on wVal { id: animW; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on hVal { id: animH; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on opacityVal { id: animOpacity; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
                 }`,
                 qmlBase,
             );
@@ -50,7 +57,7 @@ class ClientWrapper {
     }
 
     public place(x: number, y: number, width: number, height: number, animate = false) {
-        if (animate && this.animator && Config.enableAnimations) {
+        if (animate && this.animator && ClientWrapper.animationEnabled) {
             const animObj = this.animator;
             const oldGeo = this.kwinClient.frameGeometry;
             

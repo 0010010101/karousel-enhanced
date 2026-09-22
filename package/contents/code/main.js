@@ -517,6 +517,21 @@ const configDef = [
         type: "String",
         default: ".*",
     },
+    {
+        name: "enableGlowingRing",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "glowingRingColor",
+        type: "String",
+        default: "#63c0f9",
+    },
+    {
+        name: "glowingRingWidth",
+        type: "UInt",
+        default: 3,
+    },
 ];
 class Actions {
     constructor(config) {
@@ -675,6 +690,11 @@ class Actions {
             if (Workspace.activeWindow === null) {
                 return;
             }
+            // Only allow floating if preventUntile is false or window rules allow it
+            if (this.config.preventUntile) {
+                // Show notification that untile is disabled
+                return;
+            }
             cm.toggleFloatingClient(Workspace.activeWindow);
         };
         this.windowToggleFullScreen = (cm, dm) => {
@@ -689,6 +709,41 @@ class Actions {
             const isFullScreen = kwinClient.fullScreen;
             // Toggle fake fullscreen (niri-style) - keeps window tiled but fills screen
             kwinClient.fullScreen = !isFullScreen;
+        };
+        this.windowToggleMaximized = (cm, dm) => {
+            if (Workspace.activeWindow === null) {
+                return;
+            }
+            const client = cm.findTiledWindow(Workspace.activeWindow);
+            if (client === null) {
+                return;
+            }
+            const kwinClient = client.client.kwinClient;
+            const desktop = dm.getDesktopForClient(kwinClient);
+            if (!desktop)
+                return;
+            // Check if already maximized by script
+            const isScriptMaximized = client.focusedState.maximizedMode === 3 /* MaximizedMode.Maximized */;
+            if (isScriptMaximized) {
+                // Restore to normal tiling
+                desktop.arrange();
+                client.focusedState.maximizedMode = 0 /* MaximizedMode.Unmaximized */;
+            }
+            else {
+                // Maximize to fill available screen space (script-controlled)
+                const area = desktop.tilingArea;
+                client.client.place(area.x, area.y, area.width, area.height, this.config.enableAnimations);
+                client.focusedState.maximizedMode = 3 /* MaximizedMode.Maximized */;
+                // Disable KWin's native maximize to let script control it
+                kwinClient.setMaximize(false, false);
+            }
+        };
+        this.windowFloatToggle = (cm, dm) => {
+            if (Workspace.activeWindow === null) {
+                return;
+            }
+            // Meta+Space: detach from tiling and float
+            cm.toggleFloatingClient(Workspace.activeWindow);
         };
         this.windowMaximize = (cm, dm) => {
             if (Workspace.activeWindow === null) {
@@ -1011,9 +1066,15 @@ function getKeyBindings(world, actions) {
     return [
         {
             name: "window-toggle-floating",
-            description: "Toggle floating",
-            defaultKeySequence: "Meta+Space",
+            description: "Toggle floating (detach from tiling)",
+            defaultKeySequence: "Meta+Shift+Space",
             action: () => world.do(actions.windowToggleFloating),
+        },
+        {
+            name: "window-float-toggle",
+            description: "Float window (Meta+Space)",
+            defaultKeySequence: "Meta+Space",
+            action: () => world.do(actions.windowFloatToggle),
         },
         {
             name: "window-toggle-fullscreen",
@@ -1022,10 +1083,10 @@ function getKeyBindings(world, actions) {
             action: () => world.doIfTiledFocused(actions.windowToggleFullScreen),
         },
         {
-            name: "window-maximize",
-            description: "Maximize window to fill screen (niri-style)",
+            name: "window-toggle-maximized",
+            description: "Toggle script-controlled maximize (50% <-> 100%)",
             defaultKeySequence: "Meta+Ctrl+F",
-            action: () => world.doIfTiledFocused(actions.windowMaximize),
+            action: () => world.doIfTiledFocused(actions.windowToggleMaximized),
         },
         {
             name: "toggle-overview",
@@ -2407,6 +2468,97 @@ class Doer {
         return this.nCalls > 0;
     }
 }
+class GlowingRing {
+    constructor(enabled, color, width) {
+        this.visible = false;
+        this.enabled = enabled;
+        this.color = color;
+        this.width = width;
+        if (enabled) {
+            this.ringElement = Qt.createQmlObject(`import QtQuick 6.0
+                import org.kde.kwin 3.0
+                
+                Rectangle {
+                    id: glowRing
+                    property int ringWidth: ${width};
+                    color: "transparent"
+                    border.color: "${color}"
+                    border.width: ringWidth
+                    radius: 4
+                    z: 9999
+                    opacity: 0.8
+                    visible: false
+                    
+                    // Glow effect using ShaderEffect
+                    layer.enabled: true
+                    layer.effect: ShaderEffect {
+                        property var source: glowRing
+                        property real glowStrength: 0.5
+                        fragmentShader: \`
+                            #version 440
+                            layout(location = 0) in vec2 qt_TexCoord0;
+                            layout(location = 1) out vec4 fragColor;
+                            layout(std140, binding = 0) uniform qt_Matrix { mat4 qt_Matrix; };\n                            uniform sampler2D source;
+                            uniform float glowStrength;
+                            
+                            void main() {
+                                vec4 pixel = texture(source, qt_TexCoord0.st);
+                                if (pixel.a > 0.0) {
+                                    fragColor = vec4(pixel.rgb * glowStrength, pixel.a);
+                                } else {
+                                    discard;
+                                }
+                            }
+                        \`
+                    }
+                    
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 200;
+                            easing.type: Easing.OutCubic;
+                        }
+                    }
+                }`, qmlBase);
+        }
+        else {
+            this.ringElement = null;
+        }
+    }
+    show(x, y, width, height) {
+        if (!this.ringElement || !this.enabled)
+            return;
+        const ring = this.ringElement;
+        ring.x = x - this.width;
+        ring.y = y - this.width;
+        ring.width = width + (this.width * 2);
+        ring.height = height + (this.width * 2);
+        ring.visible = true;
+        ring.opacity = 0.8;
+        this.visible = true;
+    }
+    hide() {
+        if (!this.ringElement || !this.visible)
+            return;
+        const ring = this.ringElement;
+        ring.opacity = 0;
+        // Hide after fade out
+        this.visible = false;
+    }
+    updatePosition(x, y, width, height) {
+        if (!this.ringElement || !this.visible)
+            return;
+        const ring = this.ringElement;
+        ring.x = x - this.width;
+        ring.y = y - this.width;
+        ring.width = width + (this.width * 2);
+        ring.height = height + (this.width * 2);
+    }
+    destroy() {
+        if (this.ringElement) {
+            this.ringElement.destroy();
+        }
+    }
+}
 class LinkedList {
     constructor() {
         this.firstNode = null;
@@ -3024,10 +3176,15 @@ class ClientManager {
     }
 }
 class ClientWrapper {
+    static setAnimationConfig(enabled, duration) {
+        ClientWrapper.animationEnabled = enabled;
+        ClientWrapper.animationDuration = duration;
+    }
     constructor(kwinClient, constructInitialState, transientFor, rulesSignalManager) {
         this.kwinClient = kwinClient;
         this.transientFor = transientFor;
         this.rulesSignalManager = rulesSignalManager;
+        this.animator = null;
         this.kwinClient = kwinClient;
         this.transientFor = transientFor;
         this.transients = [];
@@ -3040,22 +3197,67 @@ class ClientWrapper {
         this.manipulatingGeometry = new Doer();
         this.lastPlacement = null;
         this.stateManager = new ClientState.Manager(constructInitialState(this));
+        // Initialize animator if animations are enabled
+        if (ClientWrapper.animationEnabled) {
+            this.animator = Qt.createQmlObject(`import QtQuick 6.0
+                Item {
+                    property real xVal: 0;
+                    property real yVal: 0;
+                    property real wVal: 0;
+                    property real hVal: 0;
+                    property real opacityVal: 1;
+                    
+                    NumberAnimation on xVal { id: animX; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on yVal { id: animY; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on wVal { id: animW; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on hVal { id: animH; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                    NumberAnimation on opacityVal { id: animOpacity; duration: ${ClientWrapper.animationDuration}; easing.type: Easing.OutCubic; }
+                }`, qmlBase);
+        }
     }
-    place(x, y, width, height) {
-        this.manipulatingGeometry.do(() => {
-            if (this.kwinClient.resize) {
-                // window is being manually resized, prevent fighting with the user
-                return;
-            }
-            this.lastPlacement = Qt.rect(x, y, width, height);
-            this.kwinClient.frameGeometry = this.lastPlacement;
-            if (this.kwinClient.frameGeometry !== this.lastPlacement) {
-                // frameGeometry assignment failed. This sometimes happens on Wayland
-                // when a window is off-screen, effectively making it stuck there.
-                this.kwinClient.frameGeometry.x = x; // This makes it unstuck.
+    place(x, y, width, height, animate = false) {
+        if (animate && this.animator && ClientWrapper.animationEnabled) {
+            const animObj = this.animator;
+            const oldGeo = this.kwinClient.frameGeometry;
+            // Set starting values
+            animObj.xVal = oldGeo.x;
+            animObj.yVal = oldGeo.y;
+            animObj.wVal = oldGeo.width;
+            animObj.hVal = oldGeo.height;
+            // Animate to target values
+            animObj.xVal = x;
+            animObj.yVal = y;
+            animObj.wVal = width;
+            animObj.hVal = height;
+            // Apply changes during animation
+            const applyGeometry = () => {
+                this.manipulatingGeometry.do(() => {
+                    if (this.kwinClient.resize)
+                        return;
+                    this.kwinClient.frameGeometry.x = animObj.xVal;
+                    this.kwinClient.frameGeometry.y = animObj.yVal;
+                    this.kwinClient.frameGeometry.width = animObj.wVal;
+                    this.kwinClient.frameGeometry.height = animObj.hVal;
+                });
+            };
+            animObj.xValChanged.connect(applyGeometry);
+            animObj.yValChanged.connect(applyGeometry);
+            animObj.wValChanged.connect(applyGeometry);
+            animObj.hValChanged.connect(applyGeometry);
+        }
+        else {
+            this.manipulatingGeometry.do(() => {
+                if (this.kwinClient.resize) {
+                    return;
+                }
+                this.lastPlacement = Qt.rect(x, y, width, height);
                 this.kwinClient.frameGeometry = this.lastPlacement;
-            }
-        });
+                if (this.kwinClient.frameGeometry !== this.lastPlacement) {
+                    this.kwinClient.frameGeometry.x = x;
+                    this.kwinClient.frameGeometry = this.lastPlacement;
+                }
+            });
+        }
     }
     moveTransient(dx, dy, kwinDesktops) {
         if (this.stateManager.getState() instanceof ClientState.Floating) {
@@ -3173,6 +3375,8 @@ class ClientWrapper {
         return manager;
     }
 }
+ClientWrapper.animationEnabled = false;
+ClientWrapper.animationDuration = 150;
 var Clients;
 (function (Clients) {
     const prohibitedClasses = [
