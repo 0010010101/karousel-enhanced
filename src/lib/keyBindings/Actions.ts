@@ -191,6 +191,8 @@ class Actions {
         
         const kwinClient = client.client.kwinClient;
         const isFullScreen = kwinClient.fullScreen;
+        
+        // Toggle fake fullscreen (niri-style) - keeps window tiled but fills screen
         kwinClient.fullScreen = !isFullScreen;
     };
 
