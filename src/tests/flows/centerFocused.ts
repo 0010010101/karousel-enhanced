@@ -1,6 +1,12 @@
 tests.register("Center focused", 5, () => {
     const config = getDefaultConfig();
     config.scrollingCentered = false;
+    config.gapsOuterLeft = 0;
+    config.gapsOuterTop = 0;
+    config.gapsOuterRight = 0;
+    config.gapsOuterBottom = 0;
+    config.gapsInnerHorizontal = 4;
+    config.gapsInnerVertical = 4;
     const { qtMock, workspaceMock, world } = init(config);
 
     const [client0, client1, client2] = workspaceMock.createClientsWithWidths(300, 152, 300);
