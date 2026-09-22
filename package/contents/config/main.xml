@@ -77,6 +77,21 @@
         <entry name="scrollingGrouped" type="Bool">
             <default>false</default>
         </entry>
+        <entry name="scrollingInfinite" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="focusFollowsMouse" type="Bool">
+            <default>false</default>
+        </entry>
+        <entry name="raiseOnFocus" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="enableOverview" type="Bool">
+            <default>true</default>
+        </entry>
+        <entry name="overviewScale" type="UInt">
+            <default>0.3</default>
+        </entry>
         <entry name="gestureScroll" type="Bool">
             <default>false</default>
         </entry>

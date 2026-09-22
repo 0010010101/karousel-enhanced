@@ -251,6 +251,17 @@ class GroupedScroller {
         desktop.scrollCenterVisible(column);
     }
 }
+class InfiniteScroller {
+    scrollToColumn(desktop, column) {
+        // Center the column in the visible area for infinite scrolling feel
+        const columnCenter = column.getLeft() + column.getWidth() / 2;
+        const visibleRange = desktop.getCurrentVisibleRange();
+        const visibleCenter = visibleRange.getLeft() + visibleRange.getWidth() / 2;
+        // Smooth scroll to center the focused column
+        const targetScrollX = columnCenter - visibleRange.getWidth() / 2;
+        desktop.setScroll(targetScrollX, false);
+    }
+}
 class LazyScroller {
     scrollToColumn(desktop, column) {
         desktop.scrollIntoView(column);
@@ -440,6 +451,31 @@ const configDef = [
         name: "scrollingGrouped",
         type: "Bool",
         default: false,
+    },
+    {
+        name: "scrollingInfinite",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "focusFollowsMouse",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "raiseOnFocus",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "enableOverview",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "overviewScale",
+        type: "UInt",
+        default: 0.3,
     },
     {
         name: "gestureScroll",
@@ -653,6 +689,29 @@ class Actions {
             const isFullScreen = kwinClient.fullScreen;
             // Toggle fake fullscreen (niri-style) - keeps window tiled but fills screen
             kwinClient.fullScreen = !isFullScreen;
+        };
+        this.windowMaximize = (cm, dm) => {
+            if (Workspace.activeWindow === null) {
+                return;
+            }
+            const window = cm.findTiledWindow(Workspace.activeWindow);
+            if (window === null) {
+                return;
+            }
+            // Niri-style maximize: fill entire screen while staying tiled
+            const kwinClient = window.client.kwinClient;
+            const screenGeo = Workspace.clientArea(4 /* ClientAreaOption.FullScreenArea */, Workspace.activeScreen, kwinClient.desktops[0]);
+            window.client.place(screenGeo.x, screenGeo.y, screenGeo.width, screenGeo.height);
+        };
+        this.toggleOverview = (cm, dm) => {
+            // Show overview of all columns/windows (niri-expose like)
+            const desktop = dm.getCurrentDesktop();
+            if (desktop === undefined) {
+                return;
+            }
+            // Trigger overview mode - this would need UI integration
+            // For now, center view on all columns
+            desktop.grid.arrange(desktop.tilingArea.x - desktop.getScrollX(), desktop.getCurrentVisibleRange());
         };
         this.columnMoveLeft = (cm, dm, window, column, grid) => {
             grid.moveColumnLeft(column);
@@ -961,6 +1020,18 @@ function getKeyBindings(world, actions) {
             description: "Toggle fake fullscreen (niri-style)",
             defaultKeySequence: "Meta+F",
             action: () => world.doIfTiledFocused(actions.windowToggleFullScreen),
+        },
+        {
+            name: "window-maximize",
+            description: "Maximize window to fill screen (niri-style)",
+            defaultKeySequence: "Meta+Ctrl+F",
+            action: () => world.doIfTiledFocused(actions.windowMaximize),
+        },
+        {
+            name: "toggle-overview",
+            description: "Toggle overview/expose view",
+            defaultKeySequence: "Meta+Tab",
+            action: () => world.do(actions.toggleOverview),
         },
         {
             name: "focus-left",
@@ -1674,6 +1745,9 @@ class Desktop {
     }
     getCurrentVisibleRange() {
         return this.getVisibleRange(this.scrollX);
+    }
+    getScrollX() {
+        return this.scrollX;
     }
     clampScrollX(x) {
         return this.config.clamper.clampScrollX(this, x);

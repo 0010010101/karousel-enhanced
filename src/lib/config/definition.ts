@@ -185,6 +185,31 @@ const configDef = [
         default: false,
     },
     {
+        name: "scrollingInfinite",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "focusFollowsMouse",
+        type: "Bool",
+        default: false,
+    },
+    {
+        name: "raiseOnFocus",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "enableOverview",
+        type: "Bool",
+        default: true,
+    },
+    {
+        name: "overviewScale",
+        type: "UInt",
+        default: 0.3,
+    },
+    {
         name: "gestureScroll",
         type: "Bool",
         default: false,

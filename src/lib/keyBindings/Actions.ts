@@ -196,6 +196,33 @@ class Actions {
         kwinClient.fullScreen = !isFullScreen;
     };
 
+    public readonly windowMaximize = (cm: ClientManager, dm: DesktopManager) => {
+        if (Workspace.activeWindow === null) {
+            return;
+        }
+        const window = cm.findTiledWindow(Workspace.activeWindow);
+        if (window === null) {
+            return;
+        }
+        
+        // Niri-style maximize: fill entire screen while staying tiled
+        const kwinClient = window.client.kwinClient;
+        const screenGeo = Workspace.clientArea(ClientAreaOption.FullScreenArea, Workspace.activeScreen, kwinClient.desktops[0]);
+        window.client.place(screenGeo.x, screenGeo.y, screenGeo.width, screenGeo.height);
+    };
+
+    public readonly toggleOverview = (cm: ClientManager, dm: DesktopManager) => {
+        // Show overview of all columns/windows (niri-expose like)
+        const desktop = dm.getCurrentDesktop();
+        if (desktop === undefined) {
+            return;
+        }
+        
+        // Trigger overview mode - this would need UI integration
+        // For now, center view on all columns
+        desktop.grid.arrange(desktop.tilingArea.x - desktop.getScrollX(), desktop.getCurrentVisibleRange());
+    };
+
     public readonly columnMoveLeft = (cm: ClientManager, dm: DesktopManager, window: Window, column: Column, grid: Grid) => {
         grid.moveColumnLeft(column);
     };

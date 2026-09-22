@@ -13,6 +13,18 @@ function getKeyBindings(world: World, actions: Actions): KeyBinding[] {
             action: () => world.doIfTiledFocused(actions.windowToggleFullScreen),
         },
         {
+            name: "window-maximize",
+            description: "Maximize window to fill screen (niri-style)",
+            defaultKeySequence: "Meta+Ctrl+F",
+            action: () => world.doIfTiledFocused(actions.windowMaximize),
+        },
+        {
+            name: "toggle-overview",
+            description: "Toggle overview/expose view",
+            defaultKeySequence: "Meta+Tab",
+            action: () => world.do(actions.toggleOverview),
+        },
+        {
             name: "focus-left",
             description: "Move focus left",
             defaultKeySequence: "Meta+A",

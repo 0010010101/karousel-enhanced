@@ -110,6 +110,10 @@ class Desktop {
         return this.getVisibleRange(this.scrollX);
     }
 
+    public getScrollX() {
+        return this.scrollX;
+    }
+
     private clampScrollX(x: number) {
         return this.config.clamper.clampScrollX(this, x);
     }

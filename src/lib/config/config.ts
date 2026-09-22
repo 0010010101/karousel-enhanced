@@ -24,6 +24,11 @@ interface Config {
     scrollingLazy: boolean;
     scrollingCentered: boolean;
     scrollingGrouped: boolean;
+    scrollingInfinite: boolean;
+    focusFollowsMouse: boolean;
+    raiseOnFocus: boolean;
+    enableOverview: boolean;
+    overviewScale: number;
     gestureScroll: boolean;
     gestureScrollInvert: boolean;
     gestureScrollStep: number;
