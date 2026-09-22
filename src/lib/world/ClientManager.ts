@@ -69,6 +69,11 @@ class ClientManager {
     }
 
     private findTransientFor(kwinClient: KwinClient) {
+        // Disable window grouping (transient handling) if configured
+        if (this.config.disableWindowGrouping) {
+            return null;
+        }
+        
         if (!kwinClient.transient || kwinClient.transientFor === null) {
             return null;
         }
@@ -236,5 +241,6 @@ namespace ClientManager {
         floatingKeepAbove: boolean;
         cursorFollowsFocus: boolean;
         preventUntile: boolean;
+        disableWindowGrouping: boolean;
     }
 }
